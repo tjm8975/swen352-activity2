@@ -20,6 +20,7 @@ class Books_API:
             response = requests.get(url)
             if response.status_code != 200:
                 return None
+
             return response.json()
         except requests.ConnectionError:
             return None

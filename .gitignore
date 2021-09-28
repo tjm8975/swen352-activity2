@@ -1,0 +1,5 @@
+virtualenv
+htmlcov
+.coverage
+__pycache__
+.idea
