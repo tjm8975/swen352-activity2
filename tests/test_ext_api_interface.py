@@ -18,7 +18,15 @@ class TestExtApiInterface(unittest.TestCase):
         requests.get = Mock(return_value = Mock(status_code = 200, **attr))
         self.assertEqual(self.api.make_request(""), dict())
 
+    def test_make_request_False(self):
+        attr = {'json.return_value': dict()}
+        requests.get = Mock(return_value = Mock(status_code = 100, **attr))
+        self.assertEqual(self.api.make_request(""), None)
 
     def test_get_ebooks(self):
         self.api.make_request = Mock(return_value=self.json_data)
         self.assertEqual(self.api.get_ebooks(self.book), self.books_data)
+
+    def test_get_ebooks_empty(self):
+        self.api.make_request = Mock(return_value=None)
+        self.assertEqual(self.api.get_ebooks(self.book), [])
