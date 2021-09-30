@@ -46,6 +46,25 @@ class TestLibbraryDBInterface(unittest.TestCase):
         self.db_interface.update_patron(Mock())
         db_update_mock.assert_called()
 
+    def test_update_patron_none(self):
+        self.assertEqual(self.db_interface.insert_patron(None), None)
+
+    def test_retrieve_patron_none(self):
+        self.db_interface.db.search = Mock(return_value=None)
+        self.assertEqual(self.db_interface.retrieve_patron(10), None)
+
+    def test_retrieve_patron(self):
+        data = [{'fname': 'name', 'lname': 'name', 'age': 'age', 'memberID': 10,
+                'borrowed_books': []}]
+        self.db_interface.db.search = Mock(return_value=data)
+        self.assertNotEqual(self.db_interface.retrieve_patron(10), None)
+
+    def test_close_db(self):
+        db_close_mock = Mock()
+        self.db_interface.db.close = db_close_mock
+        self.db_interface.close_db()
+        db_close_mock.assert_called()
+
     def test_convert_patron_to_db_format(self):
         patron_mock = Mock()
         get_fname_mock = Mock()
