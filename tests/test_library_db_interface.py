@@ -19,6 +19,14 @@ class TestLibbraryDBInterface(unittest.TestCase):
         self.db_interface.db.insert = Mock(return_value=10)
         self.assertEqual(self.db_interface.insert_patron(patron_mock), 10)
 
+    def test_insert_patron_none(self):
+        self.assertEqual(self.db_interface.insert_patron(None), None)
+
+    def test_insert_patron_in_db(self):
+        patron_mock = Mock()
+        self.db_interface.retrieve_patron = Mock(return_value=patron_mock)
+        self.assertEqual(self.db_interface.insert_patron(patron_mock), None)
+
     def test_update_patron(self):
         data = {'fname': 'name', 'lname': 'name', 'age': 'age', 'memberID': 'memberID',
                 'borrowed_books': []}
