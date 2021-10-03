@@ -57,3 +57,25 @@ class TestLibrary(unittest.TestCase):
         patron_mock = Mock()
         self.lib.db.retrieve_patron = Mock(return_value=None)
         self.assertFalse(self.lib.is_patron_registered(patron_mock))
+
+    def test_borrow_book(self):
+        patron_mock = Mock()
+        add_borrowed_book_mock = Mock()
+        patron_mock.add_borrowed_book = add_borrowed_book_mock
+        self.lib.borrow_book(self.book, patron_mock)
+        add_borrowed_book_mock.assert_called()
+        self.lib.db.update_patron.assert_called()
+
+    def test_return_borrowed_book(self):
+        patron_mock = Mock()
+        return_borrowed_book_mock = Mock()
+        patron_mock.return_borrowed_book = return_borrowed_book_mock
+        self.lib.return_borrowed_book(self.book, patron_mock)
+        return_borrowed_book_mock.assert_called()
+        self.lib.db.update_patron.assert_called()
+
+    def test_is_book_borrowed(self):
+        patron_mock = Mock()
+        get_borrowed_books_mock = Mock(return_value=self.book)
+        patron_mock.get_borrowed_books = get_borrowed_books_mock
+        self.assertTrue(self.lib.is_book_borrowed(self.book, patron_mock))
