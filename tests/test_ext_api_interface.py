@@ -18,6 +18,8 @@ class TestExtApiInterface(unittest.TestCase):
             self.author_data = json.loads(f.read())
         with open('tests_data/empty_book_data.txt', 'r') as f:
             self.empty_book_data = json.loads(f.read())
+        with open('tests_data/json_data_single.txt', 'r') as f:
+            self.json_data_single = json.loads(f.read())
 
     def test_make_request_true(self):
         attr = {'json.return_value': dict()}
@@ -40,6 +42,10 @@ class TestExtApiInterface(unittest.TestCase):
     def test_is_book_available_none(self):
         self.api.make_request = Mock(return_value=None)
         self.assertFalse(self.api.is_book_available(self.book))
+
+    def test_is_book_available_single(self):
+        self.api.make_request = Mock(return_value=self.json_data_single)
+        self.assertTrue(self.api.is_book_available(self.book))
 
     def test_books_by_author(self):
         self.api.make_request = Mock(return_value=self.author_data)
