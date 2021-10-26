@@ -67,7 +67,9 @@ class TestExtApiInterface(unittest.TestCase):
         self.assertNotEqual(self.api.get_book_info(self.book), [])
 
     def test_get_book_info_single(self):
-        self.api.make_request = Mock(return_value=self.json_data_single)
+        self.api.make_request = Mock(side_effect=lambda request_url: self.json_data_single
+                                     if request_url == "http://openlibrary.org/search.json?q=learning python"
+                                     else None)
         self.assertEqual(self.api.get_book_info(self.book), [{'title': 'Advanced Data Analytics Using Python: With '
                                                                        'Machine Learning, Deep Learning and NLP '
                                                                        'Examples', 'publisher': ["Apress"],
@@ -82,7 +84,9 @@ class TestExtApiInterface(unittest.TestCase):
         self.assertEqual(self.api.get_book_info(self.empty_book), [])
 
     def test_get_ebooks(self):
-        self.api.make_request = Mock(return_value=self.json_data)
+        self.api.make_request = Mock(side_effect=lambda request_url: self.json_data
+                                     if request_url == "http://openlibrary.org/search.json?q=learning python"
+                                     else None)
         self.assertEqual(self.api.get_ebooks(self.book), self.books_data)
 
     def test_get_ebooks_empty(self):
