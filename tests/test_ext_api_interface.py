@@ -53,7 +53,9 @@ class TestExtApiInterface(unittest.TestCase):
         self.assertTrue(self.api.is_book_available(self.book))
 
     def test_books_by_author(self):
-        self.api.make_request = Mock(return_value=self.author_data)
+        self.api.make_request = Mock(side_effect=lambda request_url: self.author_data
+                                     if request_url == "http://openlibrary.org/search.json?author=Rick Riordan"
+                                     else None)
         self.assertEqual(self.api.books_by_author(self.author), ["percy jackson 2"])
 
     def test_books_by_author_none(self):
