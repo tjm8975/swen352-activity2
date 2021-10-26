@@ -59,6 +59,13 @@ class TestExtApiInterface(unittest.TestCase):
         self.api.make_request = Mock(return_value=self.json_data)
         self.assertNotEqual(self.api.get_book_info(self.book), [])
 
+    def test_get_book_info_single(self):
+        self.api.make_request = Mock(return_value=self.json_data_single)
+        self.assertEqual(self.api.get_book_info(self.book), [{'title': 'Advanced Data Analytics Using Python: With '
+                                                                       'Machine Learning, Deep Learning and NLP '
+                                                                       'Examples', 'publisher': ["Apress"],
+                                                              'publish_year': [2018], 'language': 'English'}])
+
     def test_get_book_info_empty(self):
         self.api.make_request = Mock(return_value=self.empty_book_data)
         self.assertEqual(self.api.get_book_info(self.empty_book), [])
