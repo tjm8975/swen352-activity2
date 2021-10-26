@@ -4,6 +4,7 @@ from unittest.mock import Mock
 import requests
 import json
 
+
 class TestExtApiInterface(unittest.TestCase):
     def setUp(self):
         self.api = ext_api_interface.Books_API()
@@ -23,8 +24,10 @@ class TestExtApiInterface(unittest.TestCase):
 
     def test_make_request_true(self):
         attr = {'json.return_value': dict()}
-        requests.get = Mock(return_value=Mock(status_code=200, **attr))
-        self.assertEqual(self.api.make_request(""), dict())
+        requests.get = Mock(side_effect=lambda url: Mock(status_code=200,
+                                                         **attr) if url == "http://openlibrary.org/search.json" else
+                                                                 Mock(status_code=100, **attr))
+        self.assertEqual(self.api.make_request(self.api.API_URL), dict())
 
     def test_make_request_false(self):
         attr = {'json.return_value': dict()}
@@ -32,7 +35,9 @@ class TestExtApiInterface(unittest.TestCase):
         self.assertEqual(self.api.make_request(""), None)
 
     def test_is_book_available_true(self):
-        self.api.make_request = Mock(return_value=self.json_data)
+        self.api.make_request = Mock(side_effect=lambda request_url: self.json_data
+                                     if request_url == "http://openlibrary.org/search.json?q=learning python"
+                                     else None)
         self.assertTrue(self.api.is_book_available(self.book))
 
     def test_is_book_available_false(self):
