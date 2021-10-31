@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import Mock, call
 from library import library_db_interface
 
+
 class TestLibbraryDBInterface(unittest.TestCase):
 
     def setUp(self):
@@ -14,7 +15,7 @@ class TestLibbraryDBInterface(unittest.TestCase):
         patron_mock = Mock()
         self.db_interface.retrieve_patron = Mock(return_value=None)
         mock_data = {'fname': 'name', 'lname': 'name', 'age': 'age', 'memberID': 'memberID',
-                'borrowed_books': []}
+                     'borrowed_books': []}
         self.db_interface.convert_patron_to_db_format = Mock(return_value=mock_data)
         self.db_interface.db.insert = Mock(side_effect=lambda data: None if data is None else 10)
         self.assertEqual(self.db_interface.insert_patron(patron_mock), 10)
@@ -46,6 +47,22 @@ class TestLibbraryDBInterface(unittest.TestCase):
         self.db_interface.update_patron(Mock())
         db_update_mock.assert_called()
 
+    def test_update_patron_none_data(self):
+        convert_patron_mock = Mock()
+        self.db_interface.convert_patron_to_db_format = convert_patron_mock
+        self.db_interface.update_patron(Mock())
+        convert_patron_mock.assert_called()
+
+    def test_update_patron_not_equal(self):
+        data = {'fname': 'name', 'lname': 'name', 'age': 'age', 'memberID': 'memberID',
+                'borrowed_books': []}
+        self.db_interface.convert_patron_to_db_format = Mock(return_value=data)
+        self.db_interface.db.update = Mock()
+        self.db_interface.update_patron(Mock())
+        args = self.db_interface.db.update.call_args.args
+        # No patrons in db yet, so query.memberID == patron.get_memberID() will be false
+        self.assertEqual(args, (data, False))
+
     def test_update_patron_none(self):
         self.assertEqual(self.db_interface.insert_patron(None), None)
 
@@ -55,7 +72,7 @@ class TestLibbraryDBInterface(unittest.TestCase):
 
     def test_retrieve_patron(self):
         data = [{'fname': 'name', 'lname': 'name', 'age': 'age', 'memberID': 10,
-                'borrowed_books': []}]
+                 'borrowed_books': []}]
         self.db_interface.db.search = Mock(return_value=data)
         self.assertNotEqual(self.db_interface.retrieve_patron(10), None)
 
