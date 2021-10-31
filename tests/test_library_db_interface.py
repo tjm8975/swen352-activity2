@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import Mock, call
 from library import library_db_interface
+from library import patron
 
 
 class TestLibbraryDBInterface(unittest.TestCase):
@@ -10,6 +11,9 @@ class TestLibbraryDBInterface(unittest.TestCase):
         library_db_interface.Patron = Mock()
         library_db_interface.Query = Mock()
         self.db_interface = library_db_interface.Library_DB()
+
+    def test_init(self):
+        self.assertEqual(self.db_interface.DATABASE_FILE, 'db.json')
 
     def test_insert_patron_not_in_db(self):
         patron_mock = Mock()
