@@ -12,8 +12,14 @@ class TestPatron(unittest.TestCase):
         self.book = "Learning Python"
 
     def test_init(self):
-        with self.assertRaises(InvalidNameException):
+        with self.assertRaises(InvalidNameException) as context:
             self.patron3 = patron.Patron("Nol4n", "Porter", 25, 2468)
+
+        self.assertEqual("Name should not contain numbers", str(context.exception))
+
+    def test_init_mutant(self):
+        with self.assertRaises(InvalidNameException):
+            self.patron3 = patron.Patron("Nolan", "8", 25, 2468)
 
     def test_get_borrowed_books(self):
         self.assertEqual(self.patron.get_borrowed_books(), [])

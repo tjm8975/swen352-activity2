@@ -11,6 +11,7 @@ class TestLibrary(unittest.TestCase):
         self.lib = library.Library()
         self.author = "Rick Riordan"
         self.book = "percy jackson 2"
+        self.book2 = "Learning Python"
         with open('tests_data/ebooks.txt', 'r') as f:
             self.books_data = json.loads(f.read())
         with open('tests_data/author_data.txt', 'r') as f:
@@ -19,6 +20,10 @@ class TestLibrary(unittest.TestCase):
     def test_is_ebook_true(self):
         self.lib.api.get_ebooks = Mock(return_value=self.books_data)
         self.assertTrue(self.lib.is_ebook('learning python'))
+
+    def test_is_ebook_mutant(self):
+        self.lib.api.get_ebooks = Mock(return_value=[{'title': self.book2, 'ebook_count': 1}])
+        self.assertTrue(self.lib.is_ebook(self.book2))
 
     def test_is_ebook_false(self):
         self.lib.api.get_ebooks = Mock(return_value=[])
@@ -43,6 +48,19 @@ class TestLibrary(unittest.TestCase):
     def test_get_langauges_for_book(self):
         self.lib.api.get_book_info = Mock(return_value=set())
         self.assertEqual(self.lib.get_languages_for_book(self.book), set())
+
+    def test_get_languages_for_book_mutant(self):
+        self.lib.api.get_book_info = Mock(return_value=[{'language': "English"}])
+        language = self.lib.get_languages_for_book(self.book)
+        english = ['E', 'n', 'g', 'l', 'i', 's', 'h']
+        for ch in language:
+            if ch in english:
+                english.remove(ch)
+        self.assertEqual(english, [])
+
+    def test_get_languages_mutant_81(self):
+        self.lib.api.get_book_info = Mock(return_value=[{'language': "English"}])
+        self.assertNotEqual(set(), self.lib.get_languages_for_book(self.book))
 
     def test_register_patron(self):
         self.lib.db.insert_patron = Mock(return_value=10)
