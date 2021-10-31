@@ -13,10 +13,10 @@ class TestLibbraryDBInterface(unittest.TestCase):
     def test_insert_patron_not_in_db(self):
         patron_mock = Mock()
         self.db_interface.retrieve_patron = Mock(return_value=None)
-        data = {'fname': 'name', 'lname': 'name', 'age': 'age', 'memberID': 'memberID',
+        mock_data = {'fname': 'name', 'lname': 'name', 'age': 'age', 'memberID': 'memberID',
                 'borrowed_books': []}
-        self.db_interface.convert_patron_to_db_format = Mock(return_value=data)
-        self.db_interface.db.insert = Mock(return_value=10)
+        self.db_interface.convert_patron_to_db_format = Mock(return_value=mock_data)
+        self.db_interface.db.insert = Mock(side_effect=lambda data: None if data is None else 10)
         self.assertEqual(self.db_interface.insert_patron(patron_mock), 10)
 
     def test_insert_patron_none(self):
