@@ -66,6 +66,11 @@ class TestLibrary(unittest.TestCase):
         self.lib.db.insert_patron = Mock(return_value=10)
         self.assertEqual(self.lib.register_patron("Nolan", "Porter", 20, 10), 10)
 
+    def test_register_patron_none(self):
+        self.lib.db.insert_patron = Mock(side_effect=lambda patron: None if patron is None else
+        10)
+        self.assertEqual(self.lib.register_patron("Nolan", "Porter", 20, 10), 10)
+
     def test_is_patron_registered(self):
         patron_mock = Mock()
         self.lib.db.retrieve_patron = Mock(return_value=patron_mock)
