@@ -70,6 +70,13 @@ class TestLibbraryDBInterface(unittest.TestCase):
     def test_update_patron_none(self):
         self.assertEqual(self.db_interface.insert_patron(None), None)
 
+    def test_retrieve_patron_not_equal(self):
+        self.db_interface.db.search = Mock(return_value=None)
+        self.db_interface.retrieve_patron(Mock())
+        args = self.db_interface.db.search.call_args.args
+        # No patrons in db yet, so query.memberID == patron.get_memberID() will be false
+        self.assertEqual(args, (False,))
+
     def test_retrieve_patron_none(self):
         self.db_interface.db.search = Mock(return_value=None)
         self.assertEqual(self.db_interface.retrieve_patron(10), None)
@@ -85,6 +92,24 @@ class TestLibbraryDBInterface(unittest.TestCase):
         self.db_interface.db.close = db_close_mock
         self.db_interface.close_db()
         db_close_mock.assert_called()
+
+    def test_convert_patron_to_db_format_mutants(self):
+        data = {'fname': 'name', 'lname': 'name', 'age': 'age', 'memberID': 10,
+                 'borrowed_books': []}
+        patron_mock = Mock()
+        get_fname_mock = Mock(return_value='name')
+        get_lname_mock = Mock(return_value='name')
+        get_age_mock = Mock(return_value='age')
+        get_memberID_mock = Mock(return_value=10)
+        get_borrowed_books_mock = Mock(return_value=[])
+
+        patron_mock.get_fname = get_fname_mock
+        patron_mock.get_lname = get_lname_mock
+        patron_mock.get_age = get_age_mock
+        patron_mock.get_memberID = get_memberID_mock
+        patron_mock.get_borrowed_books = get_borrowed_books_mock
+
+        self.assertEqual(self.db_interface.convert_patron_to_db_format(patron_mock), data)
 
     def test_convert_patron_to_db_format(self):
         patron_mock = Mock()
